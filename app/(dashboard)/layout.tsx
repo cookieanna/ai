@@ -13,7 +13,7 @@ export default function DashboardLayout({
         <Sidebar/>
                
             </div>
-            <main className="w-full md:pl-72 bg-red-200">
+            <main className="w-full md:pl-72 bg-red-200/5">
                 <Navbar />
                 {children}
             </main>
