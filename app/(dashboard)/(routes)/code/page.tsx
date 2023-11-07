@@ -2,6 +2,7 @@
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import ReactMarkdown from "react-markdown";
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import Heading from "@/components/heading";
-import { MessagesSquare } from "lucide-react";
+import { Code, MessagesSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChatCompletionMessage } from "openai/resources/index.mjs";
@@ -21,14 +22,15 @@ import LoaderPage from "@/components/loader";
 import { cn } from "@/lib/utils";
 import UserAvatar from "@/components/user-avatar";
 import BotAvatar from "@/components/bot-avatar";
+import OpenAI from "openai/index.mjs";
 const formSchema = z.object({
     prompt: z.string().min(2, {
         message: "Input must be more than 5 characters.",
     }),
 })
-const ConversationPage = () => {
+const CodePage = () => {
     const router = useRouter()
-    const [messages, setMessage] = useState<ChatCompletionMessage[]>([])
+    const [messages, setMessage] = useState<OpenAI.Chat.ChatCompletionMessage[]>([])
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -38,12 +40,12 @@ const ConversationPage = () => {
     const loading = form.formState.isSubmitting;
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const userMessage: ChatCompletionMessage = {
+            const userMessage: OpenAI.Chat.ChatCompletionMessage = {
                 role: "user",
                 content: values.prompt
             }
             const newMessages = [...messages, userMessage]
-            const response = await axios.post("/api/conversation", { messages: newMessages })
+            const response = await axios.post("/api/code", { messages: newMessages })
             setMessage((current) => ([...current, userMessage, response.data]))
             form.reset()
             console.log(response)
@@ -58,11 +60,11 @@ const ConversationPage = () => {
     return (
         <div>
             <Heading
-                title="Conversation"
-                description="Our most advanced conversation model"
-                icon={MessagesSquare}
-                iconColor="text-violet-500"
-                bgColor="text-violet-500/10"
+                title="Code Generation"
+                description="Our most advanced code model"
+                icon={Code}
+                iconColor="text-indigo-700"
+                bgColor="text-indigo-700/10"
             />
             <div className="px-4 lg:px-8">
                 <div>
@@ -88,7 +90,7 @@ const ConversationPage = () => {
                                         <Input className="border-0 outline-none
                                   focus-visible:ring-0 focus-visible:ring-transparent"
                                             disabled={loading}
-                                            placeholder="how do find a house"
+                                            placeholder="simple redux sample using react and typescript"
                                             {...field} />
                                     </FormControl>
                                     <FormMessage />
@@ -118,8 +120,24 @@ const ConversationPage = () => {
                                 )}
                             >
                                 {item.role === "user" ? <UserAvatar /> : <BotAvatar />}
-                                <p>{item.content}</p>
-                                </div>
+                                {/* <p>{item.content}</p> */}
+                                <ReactMarkdown
+                                className="text-sm overflow-hidden leading-7"
+                                components = {{
+                                    pre: ({ node, ...props }) => (
+                                        <div className="overflow-auto w-full my-2 bg-black/10
+                                        p-2 rounded-lg">
+                                            <pre {...props}/>
+                                        </div>
+                                    ),
+                                    code:({node,...props})=>(
+                                        <code className="bg-black/10 rounded-lg p-l" {...props}/>
+                                    )
+                                }}
+                                >
+                                    
+                                </ReactMarkdown>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -129,4 +147,4 @@ const ConversationPage = () => {
     );
 }
 
-export default ConversationPage;
+export default CodePage;
