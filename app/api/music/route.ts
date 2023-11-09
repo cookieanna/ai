@@ -17,12 +17,12 @@ export async function POST(req: Request, params: {
             "riffusion/riffusion:8cf61ea6c56afd61d8f5b9ffd14d7c216c0a93844ce2d82ac1c9ecc9c7f24e05",
             {
                 input: {
-                    alpha: 0.5,
+                    // alpha: 0.5,
                     prompt_a: prompt,
                     // prompt_b: "90's rap",
-                    denoising: 0.75,
-                    seed_image_id: "vibes",
-                    num_inference_steps: 50
+                    // denoising: 0.75,
+                    // seed_image_id: "vibes",
+                    // num_inference_steps: 50
                 }
             }
         );
